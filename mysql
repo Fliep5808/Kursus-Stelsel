@@ -1,0 +1,59 @@
+CREATE DATABASE livestream_system;
+
+USE livestream_system;
+
+-- Table to store admin users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store listener details
+CREATE TABLE listeners (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store course details
+CREATE TABLE courses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table to store lesson details
+CREATE TABLE lessons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    course_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    youtube_link VARCHAR(255) NOT NULL,
+    is_public BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);
+
+-- Table to manage access control for lessons
+CREATE TABLE access_control (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    lesson_id INT NOT NULL,
+    listener_id INT NOT NULL,
+    FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE,
+    FOREIGN KEY (listener_id) REFERENCES listeners(id) ON DELETE CASCADE
+);
+
+-- Table to track login/logout times
+CREATE TABLE sessions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    listener_id INT NOT NULL,
+    login_time TIMESTAMP,
+    logout_time TIMESTAMP,
+    active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (listener_id) REFERENCES listeners(id) ON DELETE CASCADE
+);
