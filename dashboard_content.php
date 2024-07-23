@@ -26,7 +26,10 @@ $lessons = $stmt->get_result();
             </div>
             <div class="card-body">
                 <p><?= htmlspecialchars($lesson['description']) ?></p>
-                <a href="lesson.php?id=<?= $lesson['id'] ?>" class="btn btn-primary">View Lesson</a>
+                <form action="begin_lesson.php" method="post">
+                    <input type="hidden" name="lesson_id" value="<?= $lesson['id'] ?>">
+                    <button type="submit" class="btn btn-primary">Begin Lesson</button>
+                </form>
             </div>
         </div>
     </div>

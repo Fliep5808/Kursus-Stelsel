@@ -18,7 +18,7 @@ if (!$lesson) {
     exit();
 }
 
-// Convert YouTube URL to embed format if necessary
+// Convert YouTube URL to embed format without autoplay
 $youtube_link = $lesson['youtube_link'];
 if (strpos($youtube_link, 'watch?v=') !== false) {
     $video_id = explode('watch?v=', $youtube_link)[1];
@@ -26,52 +26,67 @@ if (strpos($youtube_link, 'watch?v=') !== false) {
 }
 ?>
 
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800"><?= htmlspecialchars($lesson['name']) ?></h1>
-</div>
-
-<div class="embed-responsive embed-responsive-16by9">
-    <iframe class="embed-responsive-item" src="<?= htmlspecialchars($youtube_link) ?>" allowfullscreen></iframe>
-</div>
-
-<div class="modal fade" id="sessionModal" tabindex="-1" role="dialog" aria-labelledby="sessionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="sessionModalLabel">Session Check</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Are you still watching?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="continueSession">Yes</button>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><?= htmlspecialchars($lesson['name']) ?></h1>
     </div>
-</div>
 
-<script>
-    $(document).ready(function () {
-        setInterval(function () {
-            $('#sessionModal').modal('show');
-        }, 900000); // Show modal every 15 minutes
+    <div class="embed-responsive embed-responsive-16by9">
+        <iframe id="player" class="embed-responsive-item" src="<?= htmlspecialchars($youtube_link) ?>" allowfullscreen></iframe>
+    </div>
 
-        $('#continueSession').click(function () {
-            $('#sessionModal').modal('hide');
-        });
+    <button id="playButton" class="btn btn-primary mt-3">Play</button>
+    <button id="pauseButton" class="btn btn-secondary mt-3">Pause</button>
 
-        $('#sessionModal').on('hidden.bs.modal', function () {
-            setTimeout(function () {
-                alert("You have been logged out due to inactivity.");
-                window.location.href = 'logout.php';
-            }, 120000); // Log out after 2 minutes if no response
-        });
+    <form action="finish_lesson.php" method="post">
+        <input type="hidden" name="lesson_id" value="<?= $lesson_id ?>">
+        <button type="submit" class="btn btn-primary mt-3">11Finish Watching</button>
+    </form>
 
-        $(window).on('blur', function () {
-            window.location.href = 'logout.php';
-        });
-    });
-</script>
+    <script>
+        var player;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            document.getElementById('playButton').addEventListener('click', function() {
+                try {
+                    player.playVideo();
+                } catch (error) {
+                    console.error('Error playing video:', error);
+                }
+            });
+
+            document.getElementById('pauseButton').addEventListener('click', function() {
+                try {
+                    player.pauseVideo();
+                } catch (error) {
+                    console.error('Error pausing video:', error);
+                }
+            });
+        }
+
+        function onPlayerError(event) {
+            console.error('YouTube Player Error:', event.data);
+        }
+    </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("ss", $email, $phone);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result->num_rows > 0) {
         $listener = $result->fetch_assoc();
         $_SESSION['listener_id'] = $listener['id'];
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("is", $listener['id'], $login_time);
         $stmt->execute();
-
+        
         header("Location: dashboard.php");
     } else {
         $error = "Invalid email or phone number.";

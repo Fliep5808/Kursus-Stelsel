@@ -1,8 +1,9 @@
 <?php
 include 'config.php';
 
-$sql = "SELECT s.*, l.first_name, l.last_name, l.email FROM sessions s
+$sql = "SELECT s.*, l.first_name, l.last_name, l.email, le.name as lesson_name FROM sessions s
         JOIN listeners l ON s.listener_id = l.id
+        JOIN lessons le ON s.lesson_id = le.id
         ORDER BY s.login_time DESC";
 $sessions = $conn->query($sql);
 ?>
@@ -18,6 +19,7 @@ $sessions = $conn->query($sql);
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Email</th>
+                    <th>Lesson</th>
                     <th>Login Time</th>
                     <th>Logout Time</th>
                     <th>Active</th>
@@ -29,6 +31,7 @@ $sessions = $conn->query($sql);
                     <td><?= htmlspecialchars($session['first_name']) ?></td>
                     <td><?= htmlspecialchars($session['last_name']) ?></td>
                     <td><?= htmlspecialchars($session['email']) ?></td>
+                    <td><?= htmlspecialchars($session['lesson_name']) ?></td>
                     <td><?= htmlspecialchars($session['login_time']) ?></td>
                     <td><?= htmlspecialchars($session['logout_time']) ?></td>
                     <td><?= $session['active'] ? 'Yes' : 'No' ?></td>
